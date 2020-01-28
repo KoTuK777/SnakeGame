@@ -1,14 +1,13 @@
 #pragma once
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
 class Food {
 	int x, y;
 	const int id = 2;
 
-	bool isFood = false;
+	bool isFood = true;
 public:
 	Food() {}
 
@@ -34,5 +33,9 @@ public:
 
 	bool getIsFood() {
 		return isFood;
+	}
+
+	int getId() {
+		return id;
 	}
 };
