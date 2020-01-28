@@ -2,9 +2,9 @@
 #include <iostream>
 #include <vector>
 #include <conio.h>
+#include <windows.h>
 #include "Snake.h"
 #include "Food.h"
-
 using namespace std;
 
 void showChar(int x, int y, char character) {
@@ -12,6 +12,7 @@ void showChar(int x, int y, char character) {
 	//1 unit = 0.5 width and 1 height
 	cord.X = x * 2;
 	cord.Y = y;
+	
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cord);
 	cout << character;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cord);
@@ -29,6 +30,8 @@ class Game {
 
 	vector<vector<int>> showMap;
 
+	bool start = false;
+	
 public:
 	Game() {
 		map = vector<vector<int>>(heigth, vector<int>(width, 0));
@@ -40,8 +43,10 @@ public:
 					map[i][j] = -1;
 			}
 		}
-
+		snake.createSnake(map);
+		food.createFood(map);
 		updateMap();
+		cout << "\n     Press wasd or arrows to start\n";
 	}
 
 	void updateMap() {
@@ -53,9 +58,9 @@ public:
 						showChar(j, i, ' ');
 					else if (showMap[i][j] == -1)
 						showChar(j, i, '#');
-					else if (showMap[i][j] == 1)
+					else if (showMap[i][j] == snake.getId())
 						showChar(j, i, '#');
-					else if (showMap[i][j] == 2)
+					else if (showMap[i][j] == food.getId())
 						showChar(j, i, '0');
 				}
 			}
@@ -64,19 +69,34 @@ public:
 
 	void play() {
 		do {
-			if (_kbhit()) snake.updateDir(_getch(), map);
+			if (_kbhit()) {
+				snake.updateDir(_getch(), map);
+				if (!start) start = true;
+			}
 			snake.moves(map);
 			snake.updateSnake(map);
-
+						
 			updateMap();
-
+			
 			food.checkFood(map);
 			if (!food.getIsFood()) {
 				snake.addLength();
 				food.createFood(map);
 			}
 
+			if(start) showScore();
+
 			Sleep(200);
 		} while (!snake.getCollision());
+	}
+
+	void showScore() {
+		COORD cord;
+		//1 unit = 0.5 width and 1 height
+		cord.X = 5;
+		cord.Y = heigth;
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), cord);
+		cout << "                             \n";
+		cout << "Score: " << snake.getLength();
 	}
 };
