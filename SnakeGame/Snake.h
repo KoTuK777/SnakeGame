@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <vector>
-
 using namespace std;
 
 struct snakeCords {
@@ -11,11 +10,13 @@ struct snakeCords {
 class Snake {
 	vector<snakeCords> snake;
 
+	const int id = 1;
+
 	int x = 10, y = 10;
 
 	int lastX, lastY;
 
-	int length = 2;
+	int length = 1;
 
 	bool right, left, up, down;
 	bool collision = false;
@@ -26,7 +27,6 @@ public:
 		head.x = x;
 		head.y = y;
 		snake.push_back(head);
-		//cout << snake.size() << endl;
 	}
 
 	void updateSnake(vector<vector<int>>& map) {
@@ -47,23 +47,44 @@ public:
 	}
 
 	void updateDir(int key, vector<vector<int>>& map) {
-		right =
-			left =
-			down =
-			up = false;
 		switch (key) {
 			//w = 119; W = 87; Up arrow = 72
 		case 119: case 87: case 72:
-			up = true; break;
+			if (!down)
+			{
+				up = true; 
+				right =
+				left =
+				down = false;
+			}
+			break;			
 			//a = 97; A = 65; Left arrow = 75
 		case 97: case 65: case 75:
-			left = true; break;
+			if (!right) {
+				left = true;
+				right =
+				up =
+				down = false;
+			}
+			break;
 			//s = 115; S = 83; Down arrow = 80
 		case 115: case 83: case 80:
-			down = true; break;
+			if (!up) {
+				down = true;
+				left =
+				right =
+				up = false;
+			}
+			break;
 			//d = 100; D = 68; Right arrow = 77
 		case 100: case 68: case 77:
-			right = true; break;
+			if (!left) {
+				right = true;
+				down = 
+				left =
+				up = false;
+			}
+			break;
 		}
 	}
 
@@ -78,21 +99,35 @@ public:
 	}	
 
 	void checkCollison(vector<vector<int>>& map) {
-		if (right && (map[y][x + 1] == -1 || map[y][x + 1] == 1)) collision = true;
-		if (left && (map[y][x - 1] == -1 || map[y][x - 1] == 1)) collision = true;
-		if (up && (map[y - 1][x] == -1 || map[y - 1][x] == 1)) collision = true;
-		if (down && (map[y + 1][x] == -1 || map[y + 1][x] == 1)) collision = true;
+		int localX = snake[0].x, localY = snake[0].y;
+
+		if (right && (map[localY][localX + 1] == -1 || map[localY][localX + 1] == 1)) collision = true;
+		if (left && (map[localY][localX - 1] == -1 || map[localY][localX - 1] == 1)) collision = true;
+		if (up && (map[localY - 1][localX] == -1 || map[localY - 1][localX] == 1)) collision = true;
+		if (down && (map[localY + 1][localX] == -1 || map[localY + 1][localX] == 1)) collision = true;
 	}
 	
 	void addLength() {
 		snakeCords tail;
 		tail.x = lastX;
 		tail.y = lastY;
-
 		snake.push_back(tail);
+		length++;
+	}
+
+	void createSnake(vector<vector<int>>& map) {
+		map[y][x] = id;
 	}
 
 	bool getCollision() {
 		return collision;
+	}
+
+	int getId() {
+		return id;
+	}
+
+	int getLength() {
+		return length;
 	}
 };
